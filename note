@@ -50,6 +50,7 @@ do
 	else
 		while :
 		do
+		taginput="untagged"
 			if [ -z $taginput ]
 			then
 				break
