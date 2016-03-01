@@ -1,0 +1,113 @@
+#!/bin/bash
+
+
+
+###################
+###### Setting and defining baseline or config supplied variables
+###################
+
+
+NOW=$(date +"%m-%d-%Y %H:%M")
+HISTFILE=~/Dropbox/Apps/.notesourcehistory
+NOTESTORAGE=~/Dropbox/Apps/research.txt
+
+# load history from HISTFILE into program for use
+history -r
+
+echo "What's your Source? "
+echo ""
+read -ep "for previous entries, use the up arrow:  " source
+history -s "$source"
+
+echo "   "
+
+h=$(grep -c "$source" "$HISTFILE")
+
+tput setb [3]
+
+if [ "$h" == 0 ]
+	then 
+	  echo "$source">>$HISTFILE
+	  echo "\"$source\""          
+	  echo "+++++ is saved to sources +++++"
+	  echo ""
+	  echo ""
+	  fi
+
+body=""
+
+tput setb [2]
+
+while :
+do
+	echo "What would you like to note?"
+	echo "'q' or 'quit' to exit"
+	echo ""
+	read -e body
+	if [ "$body" = "quit" ]
+	then
+	  break
+	else
+		while :
+		do
+			if [ -z $taginput ]
+			then
+				break
+			else
+				tput sc
+				echo ""
+				echo ""
+				echo -ne "\e[1mTags:\e[0m  @${tags::len-1}"
+				echo ""
+				echo ""
+				echo -ne "\e[2m'Enter' once to submit, twice to finish tagging\e[0m"
+				echo ""
+				echo -ne "\e[2m'Up' for suggestions;\e[0m"
+				echo "" 
+				echo -ne "Search or enter Tags Here: "
+				read taginput
+				tput cuu1
+				echo -e "\033[2K"
+				taginput=$(echo $taginput | tr -d ' ')
+				tags=$(echo "$tags$taginput, ")
+				tags=$(echo ${tags//","/" @"})
+					if [ -z $taginput ]
+					then 
+						tput sc
+						tput cuu1
+						tput cuu1
+						tput cuu1
+						echo -e "\033[2K"
+						echo -e "\033[2K"
+						fi
+				tput rc
+		
+			fi		
+			done
+			echo ""
+
+############################		                                      ############################
+######### Write Note variables to notebook plaintext file (variable NOTESTORAGE from config file)#########
+############################                                                  ############################
+
+### Points of Interest:
+# multiple "echo"s are used to eliminate possible problems with /n compatibility with text editors or terminals
+		
+		echo "$NOW   ${summary^^}" >>$NOTESTORAGE
+		echo "   $body" >>$NOTESTORAGE
+		echo "        -------------@$tags---     $source" >>$NOTESTORAGE
+		echo "   " >>$NOTESTORAGE
+		echo "   " >>$NOTESTORAGE
+
+		echo ""
+		echo "+++   Noted!   +++"
+		echo ""
+		echo "" 
+fi
+done
+
+echo ""
+echo ""
+echo "====== Notes Filed ======"
+echo ""
+echo ""
