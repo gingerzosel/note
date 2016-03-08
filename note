@@ -1,10 +1,9 @@
 #!/bin/bash
 
 
-
-###################
-###### Setting and defining baseline or config supplied variables
-###################
+###################                                  
+  ###### Setting and defining baseline or config supplied variables ######
+                                                         ###################  
 
 
 NOW=$(date +"%m-%d-%Y %H:%M")
@@ -14,6 +13,10 @@ NOTESTORAGE=~/Dropbox/Apps/research.txt
 # load history from HISTFILE into program for use
 history -r
 
+###################  
+  #####  'Source' variable  -- static --   #####
+                               ###################  
+
 echo "What's your Source? "
 echo ""
 read -ep "for previous entries, use the up arrow:  " source
@@ -21,6 +24,7 @@ history -s "$source"
 
 echo "   "
 
+#search for the source in the HISTFILE. if no match is found (new source), save to HISTFILE
 h=$(grep -c "$source" "$HISTFILE")
 
 tput setb [3]
@@ -28,13 +32,16 @@ tput setb [3]
 if [ "$h" == 0 ]
 	then 
 	  echo "$source">>$HISTFILE
-	  echo "\"$source\""          
-	  echo "+++++ is saved to sources +++++"
+	  echo "+++++ New source Saved +++++"
 	  echo ""
 	  echo ""
+else
+history -c
 	  fi
 
-body=""
+###################  
+  #### 'Body' Section  -- begin extended loop until new 'source' -- ####
+                                                       ###################  
 
 tput setb [2]
 
@@ -44,9 +51,17 @@ do
 	echo "'q' or 'quit' to exit"
 	echo ""
 	read -e body
-	if [ "$body" = "quit" ]
+	if [ "${body,,}" = "quit" -o "q" ]
 	then
 	  break
+
+###################  	  
+  #### 'Tag' Section -- continue extended loop and initialize nested 'tag' loop ####
+                                                                   ###################  
+	  
+# set 'tags' to tag symbol so that tags from last entry aren't appended and first tag is registered
+tags= '@'
+
 	else
 				tput sc
 				
@@ -55,7 +70,7 @@ do
 				read taginput
 				
 				taginput=$(echo $taginput | tr -d ' ')
-				tags=$(echo "@$tags$taginput, ")
+				tags=$(echo "$tags$taginput, ")
 				tags=$(echo ${tags//","/" @"})
 				
 				
@@ -63,23 +78,25 @@ do
 				tput cuu1
 				echo ""
 				echo "Tags :  $tags                  "
-				
+
+###################  
+  #### 'Summary' section -- break from 'tag' nested loop and continue extended loop ####
+                                                                       ###################                                                                  
+
 				echo ""
 				echo "Summary : "
 				read summary
 			
 				echo ""
 
-############################		                                      ############################
-######### Write Note variables to notebook plaintext file (variable NOTESTORAGE from config file)#########
-############################                                                  ############################
+############################		                                      
+  ######### Write Note variables to notebook plaintext file (variable NOTESTORAGE from config file) #########
+                                                                                   ############################
 
-### Points of Interest:
-# multiple "echo"s are used to eliminate possible problems with /n compatibility with text editors or terminals
 		
 		echo "$NOW   ${summary^^}" >>$NOTESTORAGE
 		echo "   $body" >>$NOTESTORAGE
-		echo "        -------------@$tags---     $source" >>$NOTESTORAGE
+		echo "        ----@$tags---     $source" >>$NOTESTORAGE
 		echo "   " >>$NOTESTORAGE
 		echo "   " >>$NOTESTORAGE
 
