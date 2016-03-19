@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/local/Cellar/bash/4.3.42/bin/bash
 
 
 ###################                                  
@@ -51,7 +51,7 @@ do
 	echo "'q' or 'quit' to exit"
 	echo ""
 	read -e body
-	if [ "${body,,}" = "quit" -o "q" ]
+	if [ "${body,,}" == "quit" ]
 	then
 	  break
 
@@ -59,8 +59,7 @@ do
   #### 'Tag' Section -- continue extended loop and initialize nested 'tag' loop ####
                                                                    ###################  
 	  
-# set 'tags' to tag symbol so that tags from last entry aren't appended and first tag is registered
-tags= '@'
+
 
 	else
 				tput sc
@@ -70,14 +69,16 @@ tags= '@'
 				read taginput
 				
 				taginput=$(echo $taginput | tr -d ' ')
-				tags=$(echo "$tags$taginput, ")
-				tags=$(echo ${tags//","/" @"})
+				tags=$(echo ${taginput//","/" @"})
+				tags=$(echo "@$tags")
+				
+				
 				
 				
 				tput cuu1
 				tput cuu1
 				echo ""
-				echo "Tags :  $tags                  "
+				echo "Tags :  $tags                             "
 
 ###################  
   #### 'Summary' section -- break from 'tag' nested loop and continue extended loop ####
@@ -86,6 +87,7 @@ tags= '@'
 				echo ""
 				echo "Summary : "
 				read summary
+				summary=$(echo "$summary^^")
 			
 				echo ""
 
@@ -96,10 +98,10 @@ tags= '@'
 		
 		echo "$NOW   ${summary^^}" >>$NOTESTORAGE
 		echo "   $body" >>$NOTESTORAGE
-		echo "        ----@$tags---     $source" >>$NOTESTORAGE
+		echo "        ---- $tags ---     $source" >>$NOTESTORAGE
 		echo "   " >>$NOTESTORAGE
 		echo "   " >>$NOTESTORAGE
-
+		
 		echo ""
 		echo "+++   Noted!   +++"
 		echo ""
